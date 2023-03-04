@@ -5,7 +5,7 @@ pub mod error;
 pub mod state;
 use crate::{constant::*, error::*, state::*};
 
-declare_id!("eSRxyLn7xcscZrYgPQfaVv7csHuTGy8kMknADRMokc7");
+declare_id!("A5jbvgyHtr1bbcPazdYPjS2UXfBTxbA6p1FmQfVvVoWq");
 
 #[program]
 pub mod main {
@@ -42,7 +42,7 @@ pub mod main {
         if user.task_count > 0 {
             user.task_count -= 1;
         }
-        
+
         Ok(())
     }
 
@@ -51,15 +51,14 @@ pub mod main {
 
         if status == TODO_STATUS_START {
             require!(task.status == TODO_STATUS_TODO, LibraError::NotAllowed);
-        }
-        else if status == TODO_STATUS_DONE || status == TODO_STATUS_ABANDON {
+        } else if status == TODO_STATUS_DONE || status == TODO_STATUS_ABANDON {
             require!(task.status == TODO_STATUS_START, LibraError::NotAllowed);
         }
-        
+
         task.status = status;
-        
+
         Ok(())
-    }    
+    }
 }
 
 #[derive(Accounts)]
@@ -70,7 +69,7 @@ pub struct InitUser<'info> {
 
     #[account(
         init,
-        seeds = [USER_TAG, authority.key().as_ref()],
+        seeds = [USER_TAG],
         bump,
         payer = authority,
         space = 8 + std::mem::size_of::<User>(),
@@ -85,7 +84,7 @@ pub struct InitUser<'info> {
 pub struct CreateTask<'info> {
     #[account(
         mut,
-        seeds = [USER_TAG, authority.key().as_ref()],
+        seeds = [USER_TAG],
         bump,
         has_one = authority,
     )]
@@ -93,7 +92,7 @@ pub struct CreateTask<'info> {
 
     #[account(
         init,
-        seeds = [TODO_TAG, authority.key().as_ref(), &[user_profile.task_count as u8].as_ref()],
+        seeds = [TODO_TAG, &[user_profile.task_count as u8].as_ref()],
         bump,
         payer = authority,
         space = std::mem::size_of::<Task>() + 8,
@@ -111,7 +110,7 @@ pub struct CreateTask<'info> {
 pub struct DeleteTask<'info> {
     #[account(
         mut,
-        seeds = [USER_TAG, authority.key().as_ref()],
+        seeds = [USER_TAG],
         bump,
         has_one = authority,
     )]
@@ -120,7 +119,7 @@ pub struct DeleteTask<'info> {
     #[account(
         mut,
         close = authority,
-        seeds = [TODO_TAG, authority.key().as_ref(), &[idx].as_ref()],
+        seeds = [TODO_TAG, &[idx].as_ref()],
         bump,
         has_one = authority,
     )]
@@ -137,7 +136,7 @@ pub struct DeleteTask<'info> {
 pub struct SetStatusTask<'info> {
     #[account(
         mut,
-        seeds = [USER_TAG, authority.key().as_ref()],
+        seeds = [USER_TAG],
         bump,
         has_one = authority,
     )]
@@ -145,7 +144,7 @@ pub struct SetStatusTask<'info> {
 
     #[account(
         mut,
-        seeds = [TODO_TAG, authority.key().as_ref(), &[idx].as_ref()],
+        seeds = [TODO_TAG, &[idx].as_ref()],
         bump,
         has_one = authority,
     )]
